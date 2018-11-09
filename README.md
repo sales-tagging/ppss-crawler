@@ -1,26 +1,32 @@
 # ppss-crawler
-crawling 'ㅍㅍㅅㅅ' homepage with pytohn
+crawling 'ㅍㅍㅅㅅ' homepage with python
 
-### instll
+### install
 
+0. install mysql server && chrome && chrome web-driver
+
+1. install pypi packages
 ```
-$ pip install -U Selenium
-$ pip install PyMySQL
+$ pip install -U selenium pymysql
+
+# python 2
+$ pip install -U newspaper
 
 # python 3
-$ pip install newspaper3k
+$ pip install -U newspaper3k
 ```
 
-mysql db query following this:
+2. create ```ppss``` database && create ```article``` table under ```ppss``` database.
+
 ```
 CREATE TABLE article (
-	id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     link_num INT(11) UNIQUE,
-	big_category VARCHAR(255),
-	sub_category VARCHAR(255),
-	title VARCHAR(255),
-	content MEDIUMTEXT,
-	PRIMARY KEY (id)
+    big_category VARCHAR(255),
+    sub_category VARCHAR(255),
+    title VARCHAR(255),
+    content MEDIUMTEXT,
+    PRIMARY KEY (id)
 ) charset=utf8;
 ```
 
@@ -28,25 +34,31 @@ CREATE TABLE article (
 
 db info setting: input your user, password, db name
 ```
-self.__conn = pymysql.connect(host='localhost', user='user', password='password', db='testDB', charset='utf8')
+db_info = {
+    "host": "localhost",
+    "user": "root",
+    "password": "1111",
+    "db": "ppss",
+    "charset": "utf8",
+}
 ```
 
 driver info setting: input driver path
 If you want to get off headless options, erase chrome_options part
 ```
-self.__driver = webdriver.Chrome('/driver/path', chrome_options=options)
+Bot = Bot(driver_path="./", db_info=db_info, verbose=True)
 ```
 
-If you want to use real not dev, erase following this comment:
+If you wanna off verbose mode, uncomment commented line:159:
 ```
 From: 
-# Bot.setDev(False)
+# Bot.set_dev(False)
 
 To:
-Bot.setDev(False)
+Bot.set_dev(False)
 ```
 
-Now, Excute Main.py
+Now, Execute main.py!
 ```
-$ python Main.py
+$ python main.py
 ```
