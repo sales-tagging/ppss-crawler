@@ -5,12 +5,22 @@ import pymysql
 class Bot:
     def __init__(self):
         # Chrome WebDriver를 이용해 Chrome을 실행합니다.
-        self.__driver = webdriver.Chrome('/Users/jungbohyuk/dev/store/chromedriver')
+        # self.__driver = webdriver.PhantomJS('/Users/jungbohyuk/dev/store/phantomjs-2.1.1-macosx/bin/phantomjs')
+
+        options = webdriver.ChromeOptions()
+        options.add_argument('--disable-extensions')
+        options.add_argument('--headless')
+        options.add_argument('--disable-gpu')
+        options.add_argument('--no-sandbox')
+
+        self.__driver = webdriver.Chrome('/Users/jungbohyuk/dev/store/chromedriver', chrome_options=options)
         self.__driver.implicitly_wait(3)
         self.__baseUrl = 'https://ppss.kr/'
         self.__dev = True
         self.__category = dict()
         
+        # self.__conn = pymysql.connect(host='localhost', user='user', password='test',
+        #                db='testDB', charset='utf8')
         self.__conn = pymysql.connect(host='localhost', user='root', password='qpqp1010',
                        db='testDB', charset='utf8')
  
