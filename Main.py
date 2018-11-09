@@ -1,4 +1,3 @@
-import time
 from selenium import webdriver
 
 class Bot:
@@ -7,6 +6,10 @@ class Bot:
         self.__driver = webdriver.Chrome('/Users/jungbohyuk/dev/store/chromedriver')
         self.__driver.implicitly_wait(3)
         self.__baseUrl = 'https://ppss.kr/'
+        self.__display = True
+
+    def setDisplay(self, flag):
+        self.__display = flag
 
     def get_category(self):
         self.__driver.get('https://ppss.kr/')
@@ -25,9 +28,10 @@ class Bot:
                 continue
             href = li.find_element_by_tag_name('a').get_attribute('href')
             links.append(href)
-            
-        # for link in links:
-        #     print(link)
+
+        if(self.__display):
+            for link in links:
+                print(link)
 
     def start(self):
         try:
@@ -39,6 +43,8 @@ class Bot:
 
 if __name__ == "__main__":
     Bot = Bot()
+    # If you want to not display print data, using following this:
+    # Bot.setDisplay(False)
     Bot.start()
     
 
