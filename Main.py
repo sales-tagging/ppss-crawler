@@ -1,5 +1,6 @@
 from selenium import webdriver
 from newspaper import Article
+import pymysql
 
 class Bot:
     def __init__(self):
@@ -9,6 +10,12 @@ class Bot:
         self.__baseUrl = 'https://ppss.kr/'
         self.__dev = True
         self.__category = dict()
+        
+        self.__conn = pymysql.connect(host='localhost', user='root', password='qpqp1010',
+                       db='testDB', charset='utf8')
+ 
+        # Connection 으로부터 Cursor 생성
+        self.__curs = self.__conn.cursor()
         
     def setDev(self, flag):
         self.__dev = flag
@@ -93,16 +100,38 @@ class Bot:
         return links
             
     def start(self):
+        sql = """INSERT INTO ARTICLE(link_num, big_category, sub_category, title, content) VALUES(%s, %s, %s, %s, %s)"""
+        # sql = "SELECT * FROM ARTICLE"
+        # self.__curs.execute(sql)
+        # rows = self.__curs.fetchall()
+        # print(rows)     # 전체 rows
+
+        # return
         try:
             categories = self.get_category()
-            for bigCategory, subCategory in categories.items():    # for name, age in dictionary.iteritems():  (for Python 2.x)
+            for bigCategoryName, subCategory in categories.items():    # for name, age in dictionary.iteritems():  (for Python 2.x)
                 for subCategoryLink in subCategory:
+                    arr = subCategoryLink.split('/')
+                    subCategoryName = arr[len(arr)-1]
                     links = self.collect_article_link(subCategoryLink)
                     for link in links:
                         result = self.get_data_from_url(link)
-                        print('title : ', result['title'])
-                        print('text : ', result['text'])
+                        linkArr = link.split('/')
+                        linkNum = linkArr[len(linkArr) - 1]
 
+                        if(self.__dev):
+                            print('link num : ', linkNum)
+                            print('title : ', result['title'])
+                            print('text : ', result['text'])
+
+                        try:
+                            self.__curs.execute(sql, (linkNum, bigCategoryName, subCategoryName, result['title'], result['text']))
+                            # self.__curs.execute(sql, (bigCategoryName, subCategoryName, '서울', '하이'))
+                            self.__conn.commit()
+                        except Exception as e:
+                            print(e)
+                            continue
+                
             self.__driver.quit()
         except Exception as e:
             print(e)
