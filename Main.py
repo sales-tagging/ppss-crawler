@@ -21,17 +21,31 @@ class Bot:
             print('lis size is 0')
             return
         
-        links = []
+        bigCategories = ['business', 'current-affairs', 'culture', 'tech', 'life', 'special']
+        cntBigCategories = len(bigCategories)
+        d = {bigCategories[i]: [] for i in range(0, len(bigCategories), 1)}
+
+        ix_category = 0
 
         for index, li in enumerate(lis):
             if(index == 0 or index == cnt - 1 or index == cnt - 2) :
-                continue
+                continue    
+
             href = li.find_element_by_tag_name('a').get_attribute('href')
-            links.append(href)
+
+            if(cntBigCategories > ix_category and bigCategories[ix_category] in href):
+                target = bigCategories[ix_category]
+                ix_category = ix_category + 1
+
+                continue
+            
+            d[target].append(href)
 
         if(self.__display):
-            for link in links:
-                print(link)
+            for big, sub in d.items():    # for name, age in dictionary.iteritems():  (for Python 2.x)
+                print('[', big, ']')
+                for link in sub:
+                    print(link)
 
     def start(self):
         try:
