@@ -155,7 +155,7 @@ if __name__ == "__main__":
         "charset": "utf8",
     }
 
-    Bot = Bot(driver_path="./", db_info=db_info, verbose=True)
+    Bot = Bot(driver_path="/usr/local/bin/chromedriver", db_info=db_info, verbose=True)
     # Bot.set_dev(False) # turn off logging if you want
 
     Bot.start()
