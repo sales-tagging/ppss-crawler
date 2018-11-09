@@ -115,3 +115,10 @@ dmypy.json
 
 # virtualenv
 myenv/
+
+# pycharm
+./idea
+
+# etc
+.exe
+.pyc
