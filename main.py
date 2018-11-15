@@ -89,6 +89,8 @@ class Bot:
         n_page = 1
 
         links = []
+        contents = []
+        titles = []
 
         while True:
             self.__driver.get(link + '/page/' + str(n_page))
@@ -96,10 +98,19 @@ class Bot:
 
             for article in articles:
                 href = article.find_element_by_tag_name('a').get_attribute('href')
+                title = article.find_element_by_class_name('entry-header').find_element_by_tag_name('a').text
+                content = article.find_element_by_class_name('entry-content').find_element_by_tag_name('p').text
+
+                content = content.replace("… [Read more...]", "")
+
                 links.append(href)
+                titles.append(title)
+                contents.append(content)
                 
                 if self.__dev:
                     print(href)
+                    print(title)
+                    print(content)
 
             if len(articles) < 10:
                 break
@@ -110,31 +121,36 @@ class Bot:
                 if n_page > 3:
                     break
 
-        return links
+        return links, titles, contents
             
     def start(self):
         sql = """INSERT INTO ARTICLE(link_num, big_category, sub_category, title, content) VALUES(%s, %s, %s, %s, %s)"""
 
         try:
             categories = self.get_category()
+
             for big_category_name, sub_category in categories.items():
                 for sub_category_link in sub_category:
                     arr = sub_category_link.split('/')
                     sub_category_name = arr[-1]
-                    links = self.collect_article_link(sub_category_link)
-                    for link in links:
-                        result = self.get_data_from_url(link)
+                    links, titles, contents = self.collect_article_link(sub_category_link)
+
+                    for index, link in enumerate(links):
+                        # if(index>4):
+                        #     break
+
+                        # result = self.get_data_from_url(link)
                         link_arr = link.split('/')
                         link_num = link_arr[-1]
 
                         if self.__dev:
                             print('link num : ', link_num)
-                            print('title    : ', result['title'])
-                            print('text     : ', result['text'])
+                            print('title    : ', titles[index])
+                            print('text     : ', contents[index])
 
                         try:
                             self.__curs.execute(sql, (link_num, big_category_name, sub_category_name,
-                                                      result['title'], result['text']))
+                                                      titles[index], contents[index]))
                             self.__conn.commit()
                         except Exception as e:
                             print(e)
