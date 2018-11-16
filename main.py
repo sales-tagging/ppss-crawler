@@ -58,10 +58,11 @@ class Bot:
             if cnt_big_categories > ix_category and big_categories[ix_category] in href:
                 target = big_categories[ix_category]
                 ix_category += 1
+                categories[target].append(href)
                 continue
 
             categories[target].append(href)
-
+            
         if self.__dev:
             for big, sub in categories.items():
                 print('[', big, ']')
